@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Data Saver</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    th, td {
+        padding: 8px;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    button {
+        margin-top: 10px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+</head>
+<body>
+    <h1>JamCVworks.</h1>
+    <!-- Name field added here -->
+    <label for="userName">Your Name:</label>
+    <input type="text" id="userName" placeholder="Enter your name">
+
+    <div id="tablesContainer">
+        <!-- Initial table -->
+        <table>
+            <tr>
+                <th>Program</th>
+                <th>Achievement</th>
+                <th>Date of Achievement</th>
+                <th>Venue</th>
+                <th>Level</th>
+                <th>Delete</th>
+            </tr>
+            <tr>
+                <td><input type="text" class="dataField" placeholder="Program"></td>
+                <td><input type="text" class="dataField" placeholder="Achievement"></td>
+                <td><input type="text" class="dataField" placeholder="Date of Achievement"></td>
+                <td><input type="text" class="dataField" placeholder="Venue"></td>
+                <td><input type="text" class="dataField" placeholder="Level"></td>
+                <td><button onclick="deleteTable(this)">Delete</button></td>
+            </tr>
+        </table>
+    </div>
+    <button onclick="addTable()">Add Table</button>
+    <button onclick="saveData()">Save</button>
+
+    <script>
+        function addTable() {
+            var tablesContainer = document.getElementById("tablesContainer");
+            var newTable = document.createElement("table");
+            newTable.innerHTML = `
+                <tr>
+                    <th>Program</th>
+                    <th>Achievement</th>
+                    <th>Date of Achievement</th>
+                    <th>Venue</th>
+                    <th>Level</th>
+                    <th>Delete</th>
+                </tr>
+                <tr>
+                    <td><input type="text" class="dataField" placeholder="Program"></td>
+                    <td><input type="text" class="dataField" placeholder="Achievement"></td>
+                    <td><input type="text" class="dataField" placeholder="Date of Achievement"></td>
+                    <td><input type="text" class="dataField" placeholder="Venue"></td>
+                    <td><input type="text" class="dataField" placeholder="Level"></td>
+                    <td><button onclick="deleteTable(this)">Delete</button></td>
+                </tr>`;
+            tablesContainer.appendChild(newTable);
+        }
+
+        function deleteTable(button) {
+            var table = button.parentNode.parentNode.parentNode;
+            table.parentNode.removeChild(table);
+        }
+
+        function saveData() {
+            var tables = document.querySelectorAll("table");
+            var data = [];
+
+            tables.forEach(table => {
+                var rowData = {};
+                var dataFields = table.querySelectorAll(".dataField");
+
+                dataFields.forEach((field, index) => {
+                    switch(index) {
+                        case 0:
+                            rowData["Program"] = field.value;
+                            break;
+                        case 1:
+                            rowData["Achievement"] = field.value;
+                            break;
+                        case 2:
+                            rowData["Date of Achievement"] = field.value;
+                            break;
+                        case 3:
+                            rowData["Venue"] = field.value;
+                            break;
+                        case 4:
+                            rowData["Level"] = field.value;
+                            break;
+                        default:
+                            break;
+                    }
+                });
+
+                data.push(rowData);
+            });
+
+            localStorage.setItem("savedData", JSON.stringify(data));
+            alert("Data saved successfully!");
+        }
+
+        // Check if there's any saved data when the page loads
+        window.onload = function() {
+            var savedData = localStorage.getItem("savedData");
+            if (savedData !== null) {
+                var data = JSON.parse(savedData);
+
+                data.forEach(rowData => {
+                    addTable();
+                    var lastTable = document.querySelectorAll("table")[document.querySelectorAll("table").length - 1];
+                    var dataFields = lastTable.querySelectorAll(".dataField");
+
+                    dataFields.forEach((field, index) => {
+                        switch(index) {
+                            case 0:
+                                field.value = rowData["Program"];
+                                break;
+                            case 1:
+                                field.value = rowData["Achievement"];
+                                break;
+                            case 2:
+                                field.value = rowData["Date of Achievement"];
+                                break;
+                            case 3:
+                                field.value = rowData["Venue"];
+                                break;
+                            case 4:
+                                field.value = rowData["Level"];
+                                break;
+                            default:
+                                break;
+                        }
+                    });
+                });
+            }
+        };
+    </script>
+</body>
+</html>
